@@ -1,12 +1,11 @@
-import asyncio
-import aiohttp
-import aiofiles
+import asyncio, aiohttp, aiofiles
 import os, time, glob
 from urllib.parse import urlparse
 from PIL import Image
 from concurrent.futures import ThreadPoolExecutor
+from multiprocessing import Pool, cpu_count
 
-#Asyncio part
+# --------------------- Asyncio part --------------------- #
 
 # start = time.perf_counter()
 download_folder = "downloaded"
@@ -52,12 +51,12 @@ async def main():
         await asyncio.gather(*tasks)
 
 
-#Threading part
+# --------------------- Threading part --------------------- #
 
 saved_folder = "saved_formats"
 os.makedirs(saved_folder, exist_ok=True)
 
-formats = ["png", "jpeg", "webp"]
+formats = ["PNG", "JPEG", "WEBP"]
 
 def save_in_diff_formats(file_path):
 
@@ -65,13 +64,13 @@ def save_in_diff_formats(file_path):
         img = Image.open(file_path)
         basename = os.path.splitext(os.path.basename(file_path))[0]
 
-        for format in formats:
-            save_path = os.path.join(saved_folder, f"{basename}.{format}")
-            img.save(save_path, format)
+        for frmt in formats:
+            save_path = os.path.join(saved_folder, f"{basename}.{frmt.lower()}")
+            img.save(save_path, frmt)
             print(f"Saved {save_path}")
 
-        except Exception as ex:
-            print(f"Failed to save {file_path}: {ex}")
+    except Exception as e:
+            print(f"Failed to save {file_path}: {e}")
 
 
 def thread_save():
@@ -79,6 +78,38 @@ def thread_save():
 
     with ThreadPoolExecutor(max_workers=5) as executor:
         executor.map(save_in_diff_formats, downloaded_files)
+
+
+
+# --------------------- Multiprocessing Part --------------------- #
+
+processed_folder = "processed"
+os.makedirs(processed_folder, exist_ok=True)
+scale_factor  = 1.25
+resample_method = Image.BICUBIC
+process_count = cpu_count()
+
+def process_image(file_path):
+    try:
+        img = Image.open(file_path)
+        img_grayscale = img.convert("L")
+
+        width, height = img_grayscale.size
+        new_size = (int(width * scale_factor), int(height * scale_factor))
+        img_resized = img_grayscale.resize(new_size, resample=resample_method)
+
+        basename = os.path.splitext(os.path.basename(file_path))[0]
+        save_path = os.path.join(processed_folder, f"{basename}_processed.jpg")
+        img_resized.save(save_path)
+        print(f"Processed and Saved {save_path}")
+
+    except Exception as e:
+        print(f"Failed to process {file_path}: {e}")
+
+def multiprocessing_process():
+
+    with Pool(process_count) as p:
+        p.map(process_image, glob.glob(os.path.join(saved_folder, "*")))
 
 
 
@@ -91,3 +122,4 @@ def thread_save():
 if __name__ == "__main__":
     asyncio.run(main())
     thread_save()
+    multiprocessing_process()
