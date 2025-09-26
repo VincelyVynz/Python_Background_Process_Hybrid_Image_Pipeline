@@ -1,9 +1,10 @@
 import asyncio
 import aiohttp
 import aiofiles
-import os
+import os, time
 from urllib.parse import urlparse
 
+start = time.perf_counter()
 download_folder = "downloaded"
 os.makedirs(download_folder, exist_ok=True)
 
@@ -28,10 +29,12 @@ async def download_image(session, url, index):
     except aiohttp.ClientError as e:
         print(f"Failed to download {url}: {e}")
 
+end = time.perf_counter()
+
 async def main():
     async with aiohttp.ClientSession() as session:
         # Read URLs
-        with open("input.txt", "r") as f:
+        with open("input_urls.txt", "r") as f:
             urls = [line.strip() for line in f if line.strip()]
 
         # Optional: limit concurrency with semaphore
@@ -44,5 +47,7 @@ async def main():
         tasks = [sem_download(url, i) for i, url in enumerate(urls, start=1)]
         await asyncio.gather(*tasks)
 
+    time_taken = time.perf_counter() - start
+    print(f"Downloaded {len(urls)} urls in {time_taken} seconds")
 if __name__ == "__main__":
     asyncio.run(main())
