@@ -7,7 +7,7 @@ from multiprocessing import Pool, cpu_count
 
 # --------------------- Asyncio part --------------------- #
 
-# start = time.perf_counter()
+
 download_folder = "downloaded"
 os.makedirs(download_folder, exist_ok=True)
 
@@ -32,7 +32,7 @@ async def download_image(session, url, index):
     except aiohttp.ClientError as e:
         print(f"Failed to download {url}: {e}")
 
-# end = time.perf_counter()
+
 
 async def main():
     async with aiohttp.ClientSession() as session:
@@ -40,7 +40,7 @@ async def main():
         with open("input_urls.txt", "r") as f:
             urls = [line.strip() for line in f if line.strip()]
 
-        # Optional: limit concurrency with semaphore
+        # limit concurrency with semaphore
         semaphore = asyncio.Semaphore(5)  # max 5 downloads at a time
 
         async def sem_download(url, index):
@@ -77,7 +77,7 @@ def thread_save():
     downloaded_files = glob.glob(os.path.join(download_folder, "*"))
 
     with ThreadPoolExecutor(max_workers=5) as executor:
-        executor.map(save_in_diff_formats, downloaded_files)
+        list(executor.map(save_in_diff_formats, downloaded_files))
 
 
 
@@ -111,11 +111,6 @@ def multiprocessing_process():
     with Pool(process_count) as p:
         p.map(process_image, glob.glob(os.path.join(saved_folder, "*")))
 
-
-
-
-    # time_taken = time.perf_counter() - start
-    # print(f"Downloaded {len(urls)} urls in {time_taken} seconds")
 
 
 
