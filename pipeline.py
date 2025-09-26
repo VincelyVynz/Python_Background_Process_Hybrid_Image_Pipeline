@@ -1,10 +1,14 @@
 import asyncio
 import aiohttp
 import aiofiles
-import os, time
+import os, time, glob
 from urllib.parse import urlparse
+from PIL import Image
+from concurrent.futures import ThreadPoolExecutor
 
-start = time.perf_counter()
+#Asyncio part
+
+# start = time.perf_counter()
 download_folder = "downloaded"
 os.makedirs(download_folder, exist_ok=True)
 
@@ -29,7 +33,7 @@ async def download_image(session, url, index):
     except aiohttp.ClientError as e:
         print(f"Failed to download {url}: {e}")
 
-end = time.perf_counter()
+# end = time.perf_counter()
 
 async def main():
     async with aiohttp.ClientSession() as session:
@@ -47,7 +51,43 @@ async def main():
         tasks = [sem_download(url, i) for i, url in enumerate(urls, start=1)]
         await asyncio.gather(*tasks)
 
-    time_taken = time.perf_counter() - start
-    print(f"Downloaded {len(urls)} urls in {time_taken} seconds")
+
+#Threading part
+
+saved_folder = "saved_formats"
+os.makedirs(saved_folder, exist_ok=True)
+
+formats = ["png", "jpeg", "webp"]
+
+def save_in_diff_formats(file_path):
+
+    try:
+        img = Image.open(file_path)
+        basename = os.path.splitext(os.path.basename(file_path))[0]
+
+        for format in formats:
+            save_path = os.path.join(saved_folder, f"{basename}.{format}")
+            img.save(save_path, format)
+            print(f"Saved {save_path}")
+
+        except Exception as ex:
+            print(f"Failed to save {file_path}: {ex}")
+
+
+def thread_save():
+    downloaded_files = glob.glob(os.path.join(download_folder, "*"))
+
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        executor.map(save_in_diff_formats, downloaded_files)
+
+
+
+
+    # time_taken = time.perf_counter() - start
+    # print(f"Downloaded {len(urls)} urls in {time_taken} seconds")
+
+
+
 if __name__ == "__main__":
     asyncio.run(main())
+    thread_save()
