@@ -1,9 +1,13 @@
 import asyncio, aiohttp, aiofiles
-import os, time, glob
+import os, glob
 from urllib.parse import urlparse
 from PIL import Image
 from concurrent.futures import ThreadPoolExecutor
 from multiprocessing import Pool, cpu_count
+
+
+# Image URLs in input_urls.txt are sourced from Pexels (https://www.pexels.com/)
+# They are used for testing/demo purposes only.
 
 # --------------------- Asyncio part --------------------- #
 
