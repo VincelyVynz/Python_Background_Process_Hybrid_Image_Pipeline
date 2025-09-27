@@ -1,5 +1,3 @@
 aiohttp
 aiofiles
 Pillow
-tqdm
-opencv-python
