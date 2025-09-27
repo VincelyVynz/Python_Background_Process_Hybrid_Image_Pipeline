@@ -98,13 +98,14 @@ def process_image(file_path):
         new_size = (int(width * scale_factor), int(height * scale_factor))
         img_resized = img_grayscale.resize(new_size, resample=resample_method)
 
-        basename = os.path.splitext(os.path.basename(file_path))[0]
-        save_path = os.path.join(processed_folder, f"{basename}_processed.jpg")
+        basename, ext = os.path.splitext(os.path.basename(file_path))
+        save_path = os.path.join(processed_folder, f"{basename}_processed{ext}")
         img_resized.save(save_path)
         print(f"Processed and Saved {save_path}")
 
     except Exception as e:
         print(f"Failed to process {file_path}: {e}")
+
 
 def multiprocessing_process():
 
