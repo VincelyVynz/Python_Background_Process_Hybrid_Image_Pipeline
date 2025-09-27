@@ -16,22 +16,22 @@ This project demonstrates a hybrid approach to concurrency in Python, combining 
 - Threaded saving of images in multiple formats (PNG, JPEG, WEBP)
 - Multiprocessing for transformations:
   - Grayscale conversion
-  - Resize
-
+  - Resizing with bicubic interpolation
+    
 
 ---
 
 ## Folder Structure
 
-| File/Folder       | Description                               |
-|------------------|-------------------------------------------|
-| input_urls.txt    | List of image URLs to download            |
-| downloaded/       | Asyncio downloads (raw images)            |
-| saved_formats/    | Threaded saves in multiple formats        |
-| processed/        | Multiprocessing results                    |
-| pipeline.py       | Main project code                          |
-| requirements.txt  | Dependencies (aiohttp, Pillow/OpenCV)     |
-| README.md         | Project explanation                        |
+| File/Folder       | Description                              |
+|------------------|------------------------------------------|
+| input_urls.txt    | List of image URLs to download           |
+| downloaded/       | Asyncio downloads (raw images)           |
+| saved_formats/    | Threaded saves in multiple formats       |
+| processed/        | Multiprocessing results                   |
+| pipeline.py       | Main project code                         |
+| requirements.txt  | Dependencies (aiohttp, Pillow)     |
+| README.md         | Project explanation                       |
 
 
 
