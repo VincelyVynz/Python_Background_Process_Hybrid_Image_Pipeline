@@ -77,3 +77,8 @@ This project demonstrates a hybrid approach to concurrency in Python, combining 
 
 - Designed to showcase Python concurrency models in one cohesive project
 - Demonstrates **why and where** each model is suitable
+
+## Image Credits
+
+The sample image URLs in `input_urls.txt` are sourced from [Pexels](https://www.pexels.com/)  
+and are included here for testing/demo purposes only.
